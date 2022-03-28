@@ -1,0 +1,23 @@
+node('mastern') {
+    stage('ContinousDownload')
+{
+    git 'https://github.com/ArkLearnersEdge/maven.git'
+}
+stage('ContinousBuild')
+{
+    sh 'mvn package'
+}
+stage('ContinousDeploy')
+{
+    sh 'scp /home/ubuntu/.jenkins/workspace/dev1/webapp/target/webapp.war ubuntu@172.31.80.246:/var/lib/tomcat8/webapps/testapp'
+}
+stage('ContinousTesting')
+{
+    git 'https://github.com/ArkLearnersEdge/FunctionalTesting.git'
+    sh 'java -jar /home/ubuntu/.jenkins/workspace/dev1/testing.jar'
+}
+stage('ContinousDelivery')
+{
+  sh 'scp /home/ubuntu/.jenkins/workspace/dev1/webapp/target/webapp.war ubuntu@172.31.89.131:/var/lib/tomcat8/webapps/prodapp'
+}
+}
